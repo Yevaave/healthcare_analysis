@@ -11,3 +11,4 @@ The R shiny dashboard are effectively showcasing our findings, allowing us to pr
 In this report, we will dig deeper into each stage of our capstone projects. We will take a look at how the data was gathered and how it was cleaned and analyzed. We will go over our visualizations and findings, and we'll talk about how the R shiny dashboard was created. 
 In this report, we will dig deeper into each stage of our capstone projects, discussing the details of data gathering and cleaning stages, going over the analysis and visualizations, and taking a more detailed look at our findings and the presented dashboard. 
 
+### Considering that our capstone project is done on very private data, which we got based on an NDA contract with the insurance company, our dataset is not going to be published.
