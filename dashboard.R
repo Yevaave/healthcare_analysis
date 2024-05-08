@@ -79,7 +79,7 @@ ui <- dashboardPage(
       menuItem("Healthcare Claims Analysis", tabName = "claim_analysis"),
       menuItem("Box Plot Analysis", tabName = "box_plot_analysis"),
       menuItem("Interesting Insights", tabName = "top_illnesses"),
-      menuItem("Fun Facts / Issues", tabName = "fun_facts")
+      menuItem("Fun Facts", tabName = "fun_facts")
     )
   ),
   body = dashboardBody(
@@ -189,23 +189,23 @@ ui <- dashboardPage(
       tabItem(tabName = "top_illnesses",
               fluidRow(
                 column(width = 12,
-                       radioButtons("gender", "Select Gender:", choices = c("Both", "Male", "Female"), selected = "Both"),
+                       radioButtons("gender1", "Select Gender:", choices = c("Both", "Male", "Female"), selected = "Both"),
                        plotOutput("illness_plot"),
                        helpText("This plot showcases the top five most popular illnesses within the dataset.")
                        )),
               fluidRow(
                 column(width = 6,
-                       radioButtons("gender", "Select Gender:", choices = c("Both", "Male", "Female"), selected = "Both"),
+                       radioButtons("gender2", "Select Gender:", choices = c("Both", "Male", "Female"), selected = "Both"),
                        plotOutput("top_age_oncology_plot"),
                        helpText("This plot visualizes the top age groups with oncological claims.")),
                 column(width = 6,
-                       radioButtons("gender", "Select Gender:", choices = c("Both", "Male", "Female"), selected = "Both"),
+                       radioButtons("gender3", "Select Gender:", choices = c("Both", "Male", "Female"), selected = "Both"),
                        plotOutput("top_age_dentistry_plot"),
                        helpText("This plot displays the top age groups with dental claims."))
                       ),
               fluidRow(
                 column(width = 12,
-                       radioButtons("gender", "Select Gender:", choices = c("Both", "Male", "Female"), selected = "Both"),
+                       radioButtons("gender4", "Select Gender:", choices = c("Both", "Male", "Female"), selected = "Both"),
                        plotOutput("top_work_eye_doctor_plot"),
                        helpText("This plot presents the top work spheres or industries where individuals seek medical attention from eye doctors."))
               )
@@ -235,12 +235,42 @@ ui <- dashboardPage(
 # Define server logic
 server <- function(input, output, session) {
 
-  # Reactive expression to filter data based on selected gender
-  filtered_data <- reactive({
-    if (input$gender == "Both") {
+  # Reactive expression to filter data based on selected gender (illness plot)
+  filtered_data_illness <- reactive({
+    if (input$gender1 == "Both") {
       filtered <- data
     } else {
-      filtered <- data %>% filter(sex == input$gender)
+      filtered <- data %>% filter(sex == input$gender1)
+    }
+    return(filtered)
+  })
+  
+  # Reactive expression to filter data based on selected gender (oncology plot)
+  filtered_data_oncology <- reactive({
+    if (input$gender2 == "Both") {
+      filtered <- data
+    } else {
+      filtered <- data %>% filter(sex == input$gender2)
+    }
+    return(filtered)
+  })
+  
+  # Reactive expression to filter data based on selected gender (dentistry plot)
+  filtered_data_dentistry <- reactive({
+    if (input$gender3 == "Both") {
+      filtered <- data
+    } else {
+      filtered <- data %>% filter(sex == input$gender3)
+    }
+    return(filtered)
+  })
+  
+  # Reactive expression to filter data based on selected gender (eye doctor plot)
+  filtered_data_eye <- reactive({
+    if (input$gender4 == "Both") {
+      filtered <- data
+    } else {
+      filtered <- data %>% filter(sex == input$gender4)
     }
     return(filtered)
   })
@@ -365,7 +395,7 @@ server <- function(input, output, session) {
   
   output$illness_plot <- renderPlot({
     # Top 5 illnesses
-    top_5_illnesses <- filtered_data() %>%
+    top_5_illnesses <- filtered_data_illness() %>%
       group_by(illness_category) %>%
       summarise(Count = n()) %>%
       top_n(5, Count)
@@ -380,7 +410,7 @@ server <- function(input, output, session) {
   
   output$top_age_oncology_plot <- renderPlot({
     # Top age groups oncology
-    top_age_oncology <- filtered_data() %>%
+    top_age_oncology <- filtered_data_oncology() %>%
       filter(illness_category == "Oncology") %>%
       group_by(age) %>%
       summarise(Count = n()) %>%
@@ -396,7 +426,7 @@ server <- function(input, output, session) {
   
   output$top_age_dentistry_plot <- renderPlot({
     # Top age groups dentistry
-    top_age_dentistry <- filtered_data() %>%
+    top_age_dentistry <- filtered_data_dentistry() %>%
       filter(illness_category == "Dentistry") %>%
       group_by(age) %>%
       summarise(Count = n()) %>%
@@ -413,7 +443,7 @@ server <- function(input, output, session) {
   
   output$top_work_eye_doctor_plot <- renderPlot({
     # Top work spheres eye visiting the eye doctor
-    filtered_eye_doctor <- filtered_data() %>%
+    filtered_eye_doctor <- filtered_data_eye() %>%
       filter(illness_category == "Ophthalmology") %>%
       group_by(short_work_sphere) %>%
       summarise(Count = n()) %>%
